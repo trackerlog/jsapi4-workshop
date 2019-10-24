@@ -3,7 +3,7 @@ import MapView from "esri/views/MapView";
 import FeatureLayer from "esri/layers/FeatureLayer";
 
 const map = new EsriMap({
-  basemap: "streets"
+  basemap: "gray"
 });
 
 const view = new MapView({
@@ -13,16 +13,18 @@ const view = new MapView({
   zoom: 12
 });
 
-const weinLayer = new FeatureLayer({
-  url: "http://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/WeinanbauGebiete/FeatureServer/0"
-});
-
-let weinQuery = weinLayer.createQuery();
-weinQuery.where = "1=1";
-weinQuery.outFields = ["*"];
-let weinExtent = weinLayer.queryExtent(weinQuery).then((result: any) => {
-
-  view.goTo(result.extent);
-  map.add(weinLayer);
-
+view.when(() => {
+  const weinLayer = new FeatureLayer({
+    url: "http://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/WeinanbauGebiete/FeatureServer/0"
+  });
+  
+  let weinQuery = weinLayer.createQuery();
+  weinQuery.where = "1=1";
+  weinQuery.outFields = ["*"];
+  let weinExtent = weinLayer.queryExtent(weinQuery).then((result: any) => {
+  
+    view.goTo(result.extent);
+    map.add(weinLayer);
+  
+  });
 });
