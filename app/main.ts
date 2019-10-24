@@ -7,7 +7,6 @@ import ScaleRangeSlider from "esri/widgets/ScaleRangeSlider";
 import Search from "esri/widgets/Search";
 import SceneView from "esri/views/SceneView";
 import View from "esri/views/View";
-import Camera from "esri/Camera";
 import { Point } from "esri/geometry";
 
 const map = new EsriMap({
