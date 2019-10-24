@@ -9,6 +9,8 @@ import SceneView from "esri/views/SceneView";
 import View from "esri/views/View";
 import { Point } from "esri/geometry";
 
+import WatchWidget from "./WatchWidget";
+
 class LearnJsapi4App {
 
   private map : EsriMap;
@@ -76,7 +78,7 @@ class LearnJsapi4App {
   }
   
   private addWidgets(view: View) {
-    var layerList = new LayerList({
+    let layerList = new LayerList({
       view: view
     });
     view.ui.add(layerList, {
@@ -85,13 +87,13 @@ class LearnJsapi4App {
     });
   
     if (view.type=="2d") {
-      var compass = new Compass({
+      let compass = new Compass({
         view: view
       });
       view.ui.add(compass, "top-left");
     }
   
-    const scaleRangeSlider = new ScaleRangeSlider({
+    let scaleRangeSlider = new ScaleRangeSlider({
       view: view,
       layer: this.weinLayer,
       region: "DE"
@@ -101,13 +103,20 @@ class LearnJsapi4App {
       this.weinLayer[name] = value;
     });
   
-    var searchWidget = new Search({
+    let searchWidget = new Search({
       view: view
     });
     view.ui.add(searchWidget, {
       position: "top-right",
       index: 0
     });
+
+    // Custom Widget
+    let watchWidget = new WatchWidget(view);
+    view.ui.add(watchWidget, {
+      position: "top-right",
+      index: 1
+    })
   }
   
 }
