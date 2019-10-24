@@ -2,6 +2,7 @@ import EsriMap from "esri/Map";
 import MapView from "esri/views/MapView";
 import FeatureLayer from "esri/layers/FeatureLayer";
 import LayerList from "esri/widgets/LayerList";
+import Compass from "esri/widgets/Compass";
 
 const map = new EsriMap({
   basemap: "gray"
@@ -14,13 +15,7 @@ const view = new MapView({
   zoom: 3
 });
 
-var layerList = new LayerList({
-  view: view
-});
-view.ui.add(layerList, {
-  position: "bottom-right",
-  index: 0
-});
+addWidgets();
 
 view.when(() => {
   const weinLayer = new FeatureLayer({
@@ -41,3 +36,20 @@ view.when(() => {
   
   });
 });
+
+
+function addWidgets() {
+  var layerList = new LayerList({
+    view: view
+  });
+  view.ui.add(layerList, {
+    position: "bottom-right",
+    index: 0
+  });
+
+  var compass = new Compass({
+    view: view
+  });
+  view.ui.add(compass, "top-left");
+}
+
