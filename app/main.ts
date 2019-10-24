@@ -22,10 +22,10 @@ class LearnJsapi4App {
     this.addWeinLayer();
     this.mapView = this.viewFactory(MapView, "mapDiv");
     this.sceneView = this.viewFactory(SceneView, "sceneDiv");
-    this.accCenterWatch(this.sceneView, this.sceneView);
+    this.addCenterWatch(this.sceneView, this.sceneView);
   }
 
-  private accCenterWatch(watchView: View, setCenterView: View) {
+  private addCenterWatch(watchView: View, setCenterView: View) {
     let firsttime = true;
     watchView.watch("stationary", (s: boolean) => {
       if (s && firsttime) {
