@@ -10,7 +10,7 @@ const view = new MapView({
   map: map,
   container: "viewDiv",
   center: [-118.244, 34.052],
-  zoom: 12
+  zoom: 3
 });
 
 view.when(() => {
@@ -23,7 +23,11 @@ view.when(() => {
   weinQuery.outFields = ["*"];
   let weinExtent = weinLayer.queryExtent(weinQuery).then((result: any) => {
   
-    view.goTo(result.extent);
+    view.goTo(result.extent, {
+      animate: true,
+      duration: 10000,
+      easing: "ease-out"
+    });
     map.add(weinLayer);
   
   });
