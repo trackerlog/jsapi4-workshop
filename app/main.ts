@@ -4,6 +4,7 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import LayerList from "esri/widgets/LayerList";
 import Compass from "esri/widgets/Compass";
 import ScaleRangeSlider from "esri/widgets/ScaleRangeSlider";
+import Search from "esri/widgets/Search";
 
 const map = new EsriMap({
   basemap: "gray"
@@ -61,6 +62,14 @@ function addWidgets() {
   view.ui.add(scaleRangeSlider, "bottom-left");
   scaleRangeSlider.watch(["minScale", "maxScale"], function(value, oldValue, name) {
     weinLayer[name] = value;
+  });
+
+  var searchWidget = new Search({
+    view: view
+  });
+  view.ui.add(searchWidget, {
+    position: "top-right",
+    index: 0
   });
 
 }
