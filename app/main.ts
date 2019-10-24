@@ -12,29 +12,30 @@ import { Point } from "esri/geometry";
 class LearnJsapi4App {
 
   private map : EsriMap;
+  mapView: MapView;
+  sceneView: SceneView;
   
   constructor() {
     this.map = new EsriMap({
       basemap: "gray-vector"
     });
 
-    console.log("Class-based Map", this.map);
+    this.mapView = new MapView({
+      map: this.map,
+      container: "mapDiv",
+      center: [-118.244, 34.052],
+      zoom: 3
+    });
+    this.sceneView = new SceneView({
+      map: this.map,
+      container: "sceneDiv",
+      center: [-118.244, 34.052],
+      zoom: 3
+    });
+
   }
   
-  // const mapView = new MapView({
-  //   map: map,
-  //   container: "mapDiv",
-  //   center: [-118.244, 34.052],
-  //   zoom: 3
-  // });
-  // const sceneView = new SceneView({
-  //   map: map,
-  //   container: "sceneDiv",
-  //   center: [-118.244, 34.052],
-  //   zoom: 3
-  // });
-  
-  // const weinLayer = new FeatureLayer({
+  // this.weinLayer = new FeatureLayer({
   //   url: "http://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/WeinanbauGebiete/FeatureServer/0"
   // });
   // map.add(weinLayer);
