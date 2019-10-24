@@ -1,6 +1,7 @@
 import EsriMap from "esri/Map";
 import MapView from "esri/views/MapView";
 import FeatureLayer from "esri/layers/FeatureLayer";
+import LayerList from "esri/widgets/LayerList";
 
 const map = new EsriMap({
   basemap: "gray"
@@ -11,6 +12,14 @@ const view = new MapView({
   container: "viewDiv",
   center: [-118.244, 34.052],
   zoom: 3
+});
+
+var layerList = new LayerList({
+  view: view
+});
+view.ui.add(layerList, {
+  position: "bottom-right",
+  index: 0
 });
 
 view.when(() => {
