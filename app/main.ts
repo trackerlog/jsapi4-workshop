@@ -18,38 +18,26 @@ class LearnJsapi4App {
   weinQuery: __esri.Query;
   
   constructor() {
+    this.initializeMap();
+    this.addWeinLayer();
+    this.initializeMapView();
+    this.initializeSceneView();
+  }
 
+  private initializeMap() {
     this.map = new EsriMap({
       basemap: "gray-vector"
     });
-    this.addWeinLayer();
+  }
 
-    this.mapView = new MapView({
-      map: this.map,
-      container: "mapDiv",
-      center: [-118.244, 34.052],
-      zoom: 3
-    });
+  private initializeSceneView() {
     this.sceneView = new SceneView({
       map: this.map,
       container: "sceneDiv",
       center: [-118.244, 34.052],
       zoom: 3
     });
-
-    this.addWidgets(this.mapView);
     this.addWidgets(this.sceneView);
-    
-    this.mapView.when(() => {
-      this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
-        this.mapView.goTo(result.extent, {
-          animate: true,
-          duration: 10000,
-          easing: "ease-out"
-        });
-      });
-    });
-    
     this.sceneView.when(() => {
       this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
         this.sceneView.goTo(result.extent, {
@@ -63,7 +51,25 @@ class LearnJsapi4App {
         });
       });
     });
-    
+  }
+
+  private initializeMapView() {
+    this.mapView = new MapView({
+      map: this.map,
+      container: "mapDiv",
+      center: [-118.244, 34.052],
+      zoom: 3
+    });
+    this.addWidgets(this.mapView);
+    this.mapView.when(() => {
+      this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
+        this.mapView.goTo(result.extent, {
+          animate: true,
+          duration: 10000,
+          easing: "ease-out"
+        });
+      });
+    });
   }
 
   private addWeinLayer() {
