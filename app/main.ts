@@ -5,14 +5,22 @@ import LayerList from "esri/widgets/LayerList";
 import Compass from "esri/widgets/Compass";
 import ScaleRangeSlider from "esri/widgets/ScaleRangeSlider";
 import Search from "esri/widgets/Search";
+import SceneView from "esri/views/SceneView";
+import View from "esri/views/View";
 
 const map = new EsriMap({
-  basemap: "gray"
+  basemap: "gray-vector"
 });
 
-const view = new MapView({
+const mapView = new MapView({
   map: map,
-  container: "viewDiv",
+  container: "mapDiv",
+  center: [-118.244, 34.052],
+  zoom: 3
+});
+const sceneView = new SceneView({
+  map: map,
+  container: "sceneDiv",
   center: [-118.244, 34.052],
   zoom: 3
 });
@@ -20,27 +28,36 @@ const view = new MapView({
 const weinLayer = new FeatureLayer({
   url: "http://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/WeinanbauGebiete/FeatureServer/0"
 });
+map.add(weinLayer);
+let weinQuery = weinLayer.createQuery();
+weinQuery.where = "1=1";
+weinQuery.outFields = ["*"];
 
-addWidgets();
+addWidgets(mapView);
+addWidgets(sceneView);
 
-view.when(() => {
-  let weinQuery = weinLayer.createQuery();
-  weinQuery.where = "1=1";
-  weinQuery.outFields = ["*"];
-  let weinExtent = weinLayer.queryExtent(weinQuery).then((result: any) => {
-  
-    view.goTo(result.extent, {
+mapView.when(() => {
+  weinLayer.queryExtent(weinQuery).then((result: any) => {
+    mapView.goTo(result.extent, {
       animate: true,
       duration: 10000,
       easing: "ease-out"
     });
-    map.add(weinLayer);
-  
+  });
+});
+
+sceneView.when(() => {
+  weinLayer.queryExtent(weinQuery).then((result: any) => {
+    sceneView.goTo(result.extent, {
+      animate: true,
+      duration: 10000,
+      easing: "ease-out"
+    });
   });
 });
 
 
-function addWidgets() {
+function addWidgets(view: View) {
   var layerList = new LayerList({
     view: view
   });
@@ -71,6 +88,5 @@ function addWidgets() {
     position: "top-right",
     index: 0
   });
-
 }
 

@@ -5,12 +5,21 @@
     <title>ArcGIS JSAPI 4.13 TypeScript Demo</title>
     <style>
       html,
-      body,
-      #viewDiv {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
+      body {
+        width: 100vw;
+        height: 100vw;
+        padding:0;
+        margin:0;
+      }
+      #mapDiv {
+        float: left;
+        overflow: hidden;
+        width: 50vw;
+        height:100vw;
+      }
+      #sceneDiv {
+        overflow: hidden;
+        height:100vw;
       }
     </style>
     <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/themes/light/main.css">
@@ -28,7 +37,8 @@
     <script src="https://js.arcgis.com/4.13"></script>
   </head>
   <body>
-    <div id="viewDiv"></div>
+    <div id="mapDiv"></div>
+    <div id="sceneDiv"></div>
     <script>require(["app/main"]);</script>
   </body>
 </html>
