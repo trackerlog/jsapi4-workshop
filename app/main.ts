@@ -66,10 +66,12 @@ function addWidgets(view: View) {
     index: 0
   });
 
-  var compass = new Compass({
-    view: view
-  });
-  view.ui.add(compass, "top-left");
+  if (view.type=="2d") {
+    var compass = new Compass({
+      view: view
+    });
+    view.ui.add(compass, "top-left");
+  }
 
   const scaleRangeSlider = new ScaleRangeSlider({
     view: view,
