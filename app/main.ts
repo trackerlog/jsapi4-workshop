@@ -20,8 +20,17 @@ class LearnJsapi4App {
   constructor() {
     this.initializeMap();
     this.addWeinLayer();
-    this.initializeMapView();
-    this.initializeSceneView();
+    this.mapView = this.viewFactory(MapView, "mapDiv");
+    this.sceneView = this.viewFactory(SceneView, "sceneDiv");
+    let firsttime = true;
+    this.sceneView.watch("stationary", (s: boolean) => {
+      if (s && firsttime) {
+        firsttime = false;
+        this.sceneView.watch("center", (c: Point) => {
+          this.mapView.center = c;
+        });
+      }
+    });
   }
 
   private initializeMap() {
@@ -30,46 +39,26 @@ class LearnJsapi4App {
     });
   }
 
-  private initializeSceneView() {
-    this.sceneView = new SceneView({
+  private viewFactory<V extends View>(view: new(parameters: object) => V, containerDiv: string): V {
+    let initView = new view({
       map: this.map,
-      container: "sceneDiv",
+      container: containerDiv,
       center: [-118.244, 34.052],
       zoom: 3
     });
-    this.addWidgets(this.sceneView);
-    this.sceneView.when(() => {
-      this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
-        this.sceneView.goTo(result.extent, {
-          animate: true,
-          duration: 10000,
-          easing: "ease-out"
-        }).then(() => {
-          this.sceneView.watch("center", (c: Point) => {
-            this.mapView.center = c;
-          });
-        });
-      });
-    });
-  }
+  
+    this.addWidgets(initView);
 
-  private initializeMapView() {
-    this.mapView = new MapView({
-      map: this.map,
-      container: "mapDiv",
-      center: [-118.244, 34.052],
-      zoom: 3
-    });
-    this.addWidgets(this.mapView);
-    this.mapView.when(() => {
+    initView.when(() => {
       this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
-        this.mapView.goTo(result.extent, {
+        initView.goTo(result.extent, {
           animate: true,
           duration: 10000,
           easing: "ease-out"
         });
       });
     });
+    return initView;
   }
 
   private addWeinLayer() {
@@ -118,6 +107,5 @@ class LearnJsapi4App {
   }
   
 }
-
 
 let app = new LearnJsapi4App();
