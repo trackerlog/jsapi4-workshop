@@ -7,6 +7,8 @@ import Widget from "esri/widgets/Widget";
 
 import { renderable, tsx } from "esri/widgets/support/widget";
 import View from "esri/views/View";
+import SceneView from "esri/views/SceneView";
+import FeatureLayer from "esri/layers/FeatureLayer";
 
 const CSS = {
     base: "esri-widget",
@@ -24,14 +26,6 @@ class WatchWidget extends declared(Widget) {
     @property()
     @renderable()
     view: View;
-
-    @property()
-    @renderable()
-    firstName: string = "John";
-
-    @property()
-    @renderable()
-    lastName: string = "Smith";
 
     @property()
     @renderable()
@@ -58,13 +52,14 @@ class WatchWidget extends declared(Widget) {
             }
         }
         else if (this.view.type=="3d") {
-            if (this.view.camera) {
+            let sceneView = this.view as SceneView;
+            if (sceneView.camera) {
                 viewSpecificProps = <div>
                     <span class={CSS.emphasis}>Camera Properties</span><br/>
-                    <span>Field of View {this.view.camera.fov}</span><br/>
-                    <span>Heading {this.view.camera.heading.toFixed(2)}</span><br/>
-                    <span>Position {this.view.camera.position.x.toFixed(2)}/{this.view.camera.position.y.toFixed(2)}</span><br/>
-                    <span>Tilt {this.view.camera.tilt.toFixed(2)}</span>
+                    <span>Field of View {sceneView.camera.fov}</span><br/>
+                    <span>Heading {sceneView.camera.heading.toFixed(2)}</span><br/>
+                    <span>Position {sceneView.camera.position.x.toFixed(2)}/{sceneView.camera.position.y.toFixed(2)}</span><br/>
+                    <span>Tilt {sceneView.camera.tilt.toFixed(2)}</span>
                 </div>
             }
         }

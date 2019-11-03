@@ -26,17 +26,16 @@ class LearnJsapi4App {
     this.addFotoLayer();
     this.mapView = this.viewFactory(MapView, "mapDiv");
     this.sceneView = this.viewFactory(SceneView, "sceneDiv");
-    this.addCenterWatch(this.sceneView, this.sceneView);
+    this.addCenterWatch(this.mapView, this.sceneView);
   }
 
   private addCenterWatch(watchView: View, setCenterView: View) {
-    let firsttime = true;
-    watchView.watch("stationary", (s: boolean) => {
-      if (s && firsttime) {
-        firsttime = false;
+    let sWatchHandle = watchView.watch("stationary", (s: boolean) => {
+      if (s) {
         setCenterView.watch("center", (c: Point) => {
           this.mapView.center = c;
         });
+        sWatchHandle.remove();
       }
     });
   }
@@ -50,9 +49,7 @@ class LearnJsapi4App {
   private viewFactory<V extends View>(view: new(parameters: object) => V, containerDiv: string): V {
     let initView = new view({
       map: this.map,
-      container: containerDiv,
-      center: [-118.244, 34.052],
-      zoom: 3
+      container: containerDiv
     });
   
     this.addWidgets(initView);
@@ -105,7 +102,7 @@ class LearnJsapi4App {
           mediaInfos: [{
             title: "{Titel_Hotel_Sehenswürdigkeit_L}",
             type: "image", // Autocasts as new ImageMediaInfo()
-            caption: "{Titel_Hotel_Sehenswürdigkeit_L}",
+            caption: "{Stadtbezirk}",
             // Autocasts as new ImageMediaInfoValue()
             value: {
               sourceURL: "{BildURL}"
@@ -158,7 +155,7 @@ class LearnJsapi4App {
     });
 
     // Custom Widget
-    let watchWidget = new WatchWidget(view);
+    let watchWidget = new WatchWidget( view );
     view.ui.add(watchWidget, {
       position: "top-right",
       index: 1
