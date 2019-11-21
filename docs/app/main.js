@@ -1,7 +1,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/LayerList", "esri/widgets/Compass", "esri/widgets/ScaleRangeSlider", "esri/widgets/Search", "esri/views/SceneView", "./WatchWidget"], function (require, exports, Map_1, MapView_1, FeatureLayer_1, LayerList_1, Compass_1, ScaleRangeSlider_1, Search_1, SceneView_1, WatchWidget_1) {
+define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/FeatureLayer", "esri/widgets/LayerList", "esri/widgets/Compass", "esri/widgets/ScaleRangeSlider", "esri/widgets/Search", "esri/views/SceneView", "./WatchWidget", "./GeometryWidget", "esri/layers/GraphicsLayer", "esri/widgets/Sketch", "esri/widgets/Editor"], function (require, exports, Map_1, MapView_1, FeatureLayer_1, LayerList_1, Compass_1, ScaleRangeSlider_1, Search_1, SceneView_1, WatchWidget_1, GeometryWidget_1, GraphicsLayer_1, Sketch_1, Editor_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Map_1 = __importDefault(Map_1);
@@ -13,24 +13,29 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
     Search_1 = __importDefault(Search_1);
     SceneView_1 = __importDefault(SceneView_1);
     WatchWidget_1 = __importDefault(WatchWidget_1);
+    GeometryWidget_1 = __importDefault(GeometryWidget_1);
+    GraphicsLayer_1 = __importDefault(GraphicsLayer_1);
+    Sketch_1 = __importDefault(Sketch_1);
+    Editor_1 = __importDefault(Editor_1);
     var LearnJsapi4App = /** @class */ (function () {
         function LearnJsapi4App() {
             this.initializeMap();
             this.addWeinLayer();
             this.addFotoLayer();
+            this.addEditLayer();
+            this.sketchLayer = this.initNewGraphicsLayer("sketchLayer", "Sketch Layer");
             this.mapView = this.viewFactory(MapView_1.default, "mapDiv");
             this.sceneView = this.viewFactory(SceneView_1.default, "sceneDiv");
-            this.addCenterWatch(this.sceneView, this.sceneView);
+            this.addCenterWatch(this.mapView, this.sceneView);
         }
         LearnJsapi4App.prototype.addCenterWatch = function (watchView, setCenterView) {
             var _this = this;
-            var firsttime = true;
-            watchView.watch("stationary", function (s) {
-                if (s && firsttime) {
-                    firsttime = false;
+            var watchHandle = watchView.watch("stationary", function (s) {
+                if (s) {
                     setCenterView.watch("center", function (c) {
                         _this.mapView.center = c;
                     });
+                    watchHandle.remove();
                 }
             });
         };
@@ -39,16 +44,21 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 basemap: "gray-vector"
             });
         };
+        LearnJsapi4App.prototype.initNewGraphicsLayer = function (id, title) {
+            var gl = new GraphicsLayer_1.default({
+                id: id,
+                title: title
+            });
+            return gl;
+        };
         LearnJsapi4App.prototype.viewFactory = function (view, containerDiv) {
             var _this = this;
             var initView = new view({
                 map: this.map,
-                container: containerDiv,
-                center: [-118.244, 34.052],
-                zoom: 3
+                container: containerDiv
             });
-            this.addWidgets(initView);
             initView.when(function () {
+                _this.addWidgets(initView);
                 _this.weinLayer.queryExtent(_this.weinQuery).then(function (result) {
                     initView.goTo(result.extent, {
                         animate: true,
@@ -58,6 +68,12 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 });
             });
             return initView;
+        };
+        LearnJsapi4App.prototype.addEditLayer = function () {
+            this.editLayer = new FeatureLayer_1.default({
+                url: "https://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/jsapi4_Workshop_Editierlayer/FeatureServer/0"
+            });
+            this.map.add(this.editLayer);
         };
         LearnJsapi4App.prototype.addWeinLayer = function () {
             this.weinLayer = new FeatureLayer_1.default({
@@ -94,7 +110,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                         mediaInfos: [{
                                 title: "{Titel_Hotel_Sehenswürdigkeit_L}",
                                 type: "image",
-                                caption: "{Titel_Hotel_Sehenswürdigkeit_L}",
+                                caption: "{Stadtbezirk}",
                                 // Autocasts as new ImageMediaInfoValue()
                                 value: {
                                     sourceURL: "{BildURL}"
@@ -110,6 +126,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
             this.map.add(this.fotoLayer);
         };
         LearnJsapi4App.prototype.addWidgets = function (view) {
+            var _this = this;
             var layerList = new LayerList_1.default({
                 view: view
             });
@@ -128,7 +145,10 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 layer: this.weinLayer,
                 region: "DE"
             });
-            view.ui.add(scaleRangeSlider, "bottom-left");
+            view.ui.add(scaleRangeSlider, {
+                position: "top-left",
+                index: 0
+            });
             scaleRangeSlider.watch(["minScale", "maxScale"], function (value, oldValue, name) {
                 this.weinLayer[name] = value;
             });
@@ -139,11 +159,46 @@ define(["require", "exports", "esri/Map", "esri/views/MapView", "esri/layers/Fea
                 position: "top-right",
                 index: 0
             });
-            // Custom Widget
-            var watchWidget = new WatchWidget_1.default(view);
-            view.ui.add(watchWidget, {
+            var editor = new Editor_1.default({
+                view: view
+            });
+            view.ui.add(editor, {
+                position: "top-right",
+                index: 2
+            });
+            var sketch = new Sketch_1.default({
+                layer: this.sketchLayer,
+                view: view
+            });
+            // Listen to sketch widget's create event.
+            sketch.on("create", function (event) {
+                if (event.state === "complete") {
+                    if (event.graphic.geometry.type === "polygon") {
+                        _this.editLayer.applyEdits({
+                            addFeatures: [event.graphic]
+                        });
+                        _this.sketchLayer.remove(event.graphic);
+                    }
+                }
+            });
+            view.ui.add(sketch, {
                 position: "top-right",
                 index: 1
+            });
+            var geometryWidget = new GeometryWidget_1.default(view);
+            geometryWidget.setSelectionTarget(this.weinLayer);
+            geometryWidget.setEditLayer(this.editLayer);
+            view.whenLayerView(this.weinLayer).then(function (layerView) {
+                geometryWidget.setLayerView(layerView);
+            });
+            view.ui.add(geometryWidget, {
+                position: "top-right",
+                index: 3
+            });
+            var watchWidget = new WatchWidget_1.default(view);
+            view.ui.add(watchWidget, {
+                position: "bottom-left",
+                index: 0
             });
         };
         return LearnJsapi4App;

@@ -34,8 +34,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
         __extends(WatchWidget, _super);
         function WatchWidget(view) {
             var _this = _super.call(this) || this;
-            _this.firstName = "John";
-            _this.lastName = "Smith";
             _this.emphasized = false;
             _this.view = view;
             return _this;
@@ -80,27 +78,28 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
                 }
             }
             else if (this.view.type == "3d") {
-                if (this.view.camera) {
+                var sceneView = this.view;
+                if (sceneView.camera) {
                     viewSpecificProps = widget_1.tsx("div", null,
                         widget_1.tsx("span", { class: CSS.emphasis }, "Camera Properties"),
                         widget_1.tsx("br", null),
                         widget_1.tsx("span", null,
                             "Field of View ",
-                            this.view.camera.fov),
+                            sceneView.camera.fov),
                         widget_1.tsx("br", null),
                         widget_1.tsx("span", null,
                             "Heading ",
-                            this.view.camera.heading.toFixed(2)),
+                            sceneView.camera.heading.toFixed(2)),
                         widget_1.tsx("br", null),
                         widget_1.tsx("span", null,
                             "Position ",
-                            this.view.camera.position.x.toFixed(2),
+                            sceneView.camera.position.x.toFixed(2),
                             "/",
-                            this.view.camera.position.y.toFixed(2)),
+                            sceneView.camera.position.y.toFixed(2)),
                         widget_1.tsx("br", null),
                         widget_1.tsx("span", null,
                             "Tilt ",
-                            this.view.camera.tilt.toFixed(2)));
+                            sceneView.camera.tilt.toFixed(2)));
                 }
             }
             return (widget_1.tsx("div", { class: this.classes(CSS.base, CSS.specific, classes) },
@@ -135,14 +134,6 @@ define(["require", "exports", "esri/core/tsSupport/declareExtendsHelper", "esri/
             decorators_1.property(),
             widget_1.renderable()
         ], WatchWidget.prototype, "view", void 0);
-        __decorate([
-            decorators_1.property(),
-            widget_1.renderable()
-        ], WatchWidget.prototype, "firstName", void 0);
-        __decorate([
-            decorators_1.property(),
-            widget_1.renderable()
-        ], WatchWidget.prototype, "lastName", void 0);
         __decorate([
             decorators_1.property(),
             widget_1.renderable()
