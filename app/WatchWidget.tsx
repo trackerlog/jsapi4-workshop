@@ -8,7 +8,6 @@ import Widget from "esri/widgets/Widget";
 import { renderable, tsx } from "esri/widgets/support/widget";
 import View from "esri/views/View";
 import SceneView from "esri/views/SceneView";
-import FeatureLayer from "esri/layers/FeatureLayer";
 
 const CSS = {
     base: "esri-widget",

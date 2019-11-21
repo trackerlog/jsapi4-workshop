@@ -10,6 +10,9 @@ import View from "esri/views/View";
 import { Point } from "esri/geometry";
 
 import WatchWidget from "./WatchWidget";
+import GeometryWidget from "./GeometryWidget";
+import FeatureLayerView from "esri/views/layers/FeatureLayerView";
+import GraphicsLayer from "esri/layers/GraphicsLayer";
 
 class LearnJsapi4App {
 
@@ -19,23 +22,25 @@ class LearnJsapi4App {
   weinLayer: FeatureLayer;
   weinQuery: __esri.Query;
   fotoLayer: FeatureLayer;
+  geometryLayer: GraphicsLayer;
   
   constructor() {
     this.initializeMap();
     this.addWeinLayer();
     this.addFotoLayer();
+    this.geometryLayer = this.initNewGraphicsLayer("geometryLayer");
     this.mapView = this.viewFactory(MapView, "mapDiv");
     this.sceneView = this.viewFactory(SceneView, "sceneDiv");
     this.addCenterWatch(this.mapView, this.sceneView);
   }
 
   private addCenterWatch(watchView: View, setCenterView: View) {
-    let sWatchHandle = watchView.watch("stationary", (s: boolean) => {
+    let watchHandle = watchView.watch("stationary", (s: boolean) => {
       if (s) {
         setCenterView.watch("center", (c: Point) => {
           this.mapView.center = c;
         });
-        sWatchHandle.remove();
+        watchHandle.remove();
       }
     });
   }
@@ -46,15 +51,23 @@ class LearnJsapi4App {
     });
   }
 
+  private initNewGraphicsLayer(id: string) {
+    let gl = new GraphicsLayer({
+      id: id
+    });
+    this.map.add(gl);
+    return gl;
+  }
+
   private viewFactory<V extends View>(view: new(parameters: object) => V, containerDiv: string): V {
     let initView = new view({
       map: this.map,
       container: containerDiv
     });
-  
-    this.addWidgets(initView);
 
     initView.when(() => {
+      this.addWidgets(initView);
+
       this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
         initView.goTo(result.extent, {
           animate: true,
@@ -154,12 +167,23 @@ class LearnJsapi4App {
       index: 0
     });
 
-    // Custom Widget
-    let watchWidget = new WatchWidget( view );
+    // Custom Widgets
+    let watchWidget = new WatchWidget(view);
     view.ui.add(watchWidget, {
       position: "top-right",
       index: 1
-    })
+    });
+
+    let geometryWidget = new GeometryWidget(view);
+    geometryWidget.setSelectionTarget(this.weinLayer);
+    geometryWidget.setGraphicsLayer(this.geometryLayer);
+    view.whenLayerView(this.weinLayer).then((layerView: FeatureLayerView) => {
+      geometryWidget.setLayerView(layerView);
+    });
+    view.ui.add(geometryWidget, {
+      position: "top-right",
+      index: 1
+    });
   }
   
 }
