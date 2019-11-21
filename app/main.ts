@@ -13,6 +13,8 @@ import WatchWidget from "./WatchWidget";
 import GeometryWidget from "./GeometryWidget";
 import FeatureLayerView from "esri/views/layers/FeatureLayerView";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
+import Sketch from "esri/widgets/Sketch";
+import Editor from "esri/widgets/Editor";
 
 class LearnJsapi4App {
 
@@ -22,13 +24,15 @@ class LearnJsapi4App {
   weinLayer: FeatureLayer;
   weinQuery: __esri.Query;
   fotoLayer: FeatureLayer;
-  geometryLayer: GraphicsLayer;
+  sketchLayer: GraphicsLayer;
+  editLayer: FeatureLayer;
   
   constructor() {
     this.initializeMap();
     this.addWeinLayer();
     this.addFotoLayer();
-    this.geometryLayer = this.initNewGraphicsLayer("geometryLayer");
+    this.addEditLayer();
+    this.sketchLayer = this.initNewGraphicsLayer("sketchLayer", "Sketch Layer");
     this.mapView = this.viewFactory(MapView, "mapDiv");
     this.sceneView = this.viewFactory(SceneView, "sceneDiv");
     this.addCenterWatch(this.mapView, this.sceneView);
@@ -51,9 +55,10 @@ class LearnJsapi4App {
     });
   }
 
-  private initNewGraphicsLayer(id: string) {
+  private initNewGraphicsLayer(id: string, title: string) {
     let gl = new GraphicsLayer({
-      id: id
+      id: id,
+      title: title
     });
     this.map.add(gl);
     return gl;
@@ -77,6 +82,13 @@ class LearnJsapi4App {
       });
     });
     return initView;
+  }
+
+  private addEditLayer() {
+    this.editLayer = new FeatureLayer({
+      url: "https://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/jsapi4_Workshop_Editierlayer/FeatureServer/0"
+    });
+    this.map.add(this.editLayer);
   }
 
   private addWeinLayer() {
@@ -154,7 +166,10 @@ class LearnJsapi4App {
       layer: this.weinLayer,
       region: "DE"
     });
-    view.ui.add(scaleRangeSlider, "bottom-left");
+    view.ui.add(scaleRangeSlider, {
+      position: "top-left",
+      index: 0
+    });
     scaleRangeSlider.watch(["minScale", "maxScale"], function(value, oldValue, name) {
       this.weinLayer[name] = value;
     });
@@ -167,22 +182,49 @@ class LearnJsapi4App {
       index: 0
     });
 
-    // Custom Widgets
-    let watchWidget = new WatchWidget(view);
-    view.ui.add(watchWidget, {
+    var editor = new Editor({
+      view: view
+    });
+    view.ui.add(editor, {
+      position: "top-right",
+      index: 3
+    });
+
+    var sketch = new Sketch({
+      layer: this.sketchLayer,
+      view: view
+    });
+    // Listen to sketch widget's create event.
+    sketch.on("create", (event: any) => {
+      if (event.state === "complete") {
+       if(event.graphic.geometry.type === "polygon") {
+         this.editLayer.applyEdits({
+           addFeatures: [event.graphic]
+         });
+         this.sketchLayer.remove(event.graphic);
+       }
+      }
+    });
+    view.ui.add(sketch, {
       position: "top-right",
       index: 1
     });
 
     let geometryWidget = new GeometryWidget(view);
     geometryWidget.setSelectionTarget(this.weinLayer);
-    geometryWidget.setGraphicsLayer(this.geometryLayer);
+    geometryWidget.setEditLayer(this.editLayer);
     view.whenLayerView(this.weinLayer).then((layerView: FeatureLayerView) => {
       geometryWidget.setLayerView(layerView);
     });
     view.ui.add(geometryWidget, {
       position: "top-right",
-      index: 1
+      index: 2
+    });
+
+    let watchWidget = new WatchWidget(view);
+    view.ui.add(watchWidget, {
+      position: "bottom-left",
+      index: 0
     });
   }
   

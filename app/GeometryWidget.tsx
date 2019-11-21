@@ -30,12 +30,12 @@ class GeometryWidget extends declared(Widget) {
     @property()
     view: View;
     selectionEnabled: boolean = false;
-    fl: FeatureLayer;
+    selectionTargetLayer: FeatureLayer;
     layerView: FeatureLayerView;
     highlightClickHandler: IHandle;
     highlightedFeatures: Graphic[] = [];
     highlightHandles: __esri.Handle[] = [];
-    gl: GraphicsLayer;
+    editLayer: FeatureLayer;
 
     constructor(view: View) {
         super();
@@ -43,11 +43,11 @@ class GeometryWidget extends declared(Widget) {
     }
 
     public setSelectionTarget(layer: FeatureLayer){
-        this.fl = layer;
+        this.selectionTargetLayer = layer;
     }
 
-    public setGraphicsLayer(layer: GraphicsLayer) {
-        this.gl = layer;
+    public setEditLayer(layer: FeatureLayer){
+        this.editLayer = layer;
     }
 
     public setLayerView(layerView: FeatureLayerView){
@@ -58,15 +58,15 @@ class GeometryWidget extends declared(Widget) {
         this.selectionEnabled = !this.selectionEnabled;
         if (this.selectionEnabled) {
             this.highlightClickHandler = this.view.on("click", (event: any) => {
-                if (this.fl) {
-                    var query = this.fl.createQuery();
+                if (this.selectionTargetLayer) {
+                    var query = this.selectionTargetLayer.createQuery();
                     query.geometry = event.mapPoint;
                     query.distance = 100;
                     query.units = "meters";
                     query.spatialRelationship = "intersects";  // this is the default
                     query.returnGeometry = true;
                     query.outFields = ["*"];                
-                    this.fl.queryFeatures(query)
+                    this.selectionTargetLayer.queryFeatures(query)
                         .then((response) => {
                             this.highlightHandles.push(this.layerView.highlight(response.features));
                             this.highlightedFeatures.push(...response.features);
@@ -89,10 +89,12 @@ class GeometryWidget extends declared(Widget) {
 
         var union = geometryEngine.union(geometries);
 
-        if (this.gl) {
-            this.gl.add(new Graphic({
-                geometry: union
-            }));
+        if (this.editLayer) {
+            this.editLayer.applyEdits({
+                addFeatures: [new Graphic({
+                    geometry: union
+                })]
+            });
         }
         else {
             console.warn("GeometryWidget: No GraphicsLayer set to display unified geometry.", union);
