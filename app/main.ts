@@ -60,7 +60,6 @@ class LearnJsapi4App {
       id: id,
       title: title
     });
-    this.map.add(gl);
     return gl;
   }
 
@@ -187,7 +186,7 @@ class LearnJsapi4App {
     });
     view.ui.add(editor, {
       position: "top-right",
-      index: 3
+      index: 2
     });
 
     var sketch = new Sketch({
@@ -218,7 +217,7 @@ class LearnJsapi4App {
     });
     view.ui.add(geometryWidget, {
       position: "top-right",
-      index: 2
+      index: 3
     });
 
     let watchWidget = new WatchWidget(view);
