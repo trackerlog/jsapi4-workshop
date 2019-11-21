@@ -20,7 +20,8 @@ const CSS = {
     cursorIcon: "esri-icon-cursor",
     unionIcon: "esri-icon-pie-chart",
     clearIcon: "esri-icon-trash",
-    noFlex: "no-flex"
+    noFlex: "no-flex",
+    active: "active"
 };
 
 @subclass("esri.widgets.GeometryWidget")
@@ -106,6 +107,9 @@ class GeometryWidget extends declared(Widget) {
     protected renderSelectButton(): any {
         const title = "Select";
         let classes = [CSS.button, CSS.cursorIcon, CSS.noFlex];
+        if (this.selectionEnabled) {
+            classes.push(CSS.active);
+        }
 
         return (
             <button
