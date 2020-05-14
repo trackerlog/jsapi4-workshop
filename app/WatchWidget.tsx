@@ -8,6 +8,7 @@ import Widget from "esri/widgets/Widget";
 import { renderable, tsx } from "esri/widgets/support/widget";
 import View from "esri/views/View";
 import SceneView from "esri/views/SceneView";
+import MapView from "esri/views/MapView";
 
 const CSS = {
     base: "esri-widget",
@@ -38,15 +39,16 @@ class WatchWidget extends declared(Widget) {
 
         let viewSpecificProps: JSX.Element;
         if (this.view.type=="2d") {
-            if (this.view.extent) {
+            let mapView = this.view as MapView;
+            if (mapView.extent) {
                 viewSpecificProps = <div>
                     <span class={CSS.emphasis}>Extent Properties</span><br/>
-                    <span>X left {this.view.extent.xmin.toFixed(2)}</span><br/>
-                    <span>X right {this.view.extent.xmax.toFixed(2)}</span><br/>
-                    <span>Y bottom {this.view.extent.ymin.toFixed(2)}</span><br/>
-                    <span>Y top {this.view.extent.ymax.toFixed(2)}</span><br/>
-                    <span>Rotation {this.view.rotation.toFixed(2)}</span><br/>
-                    <span>Center {this.view.center.x.toFixed(2)}/{this.view.center.y.toFixed(2)}</span>
+                    <span>X left {mapView.extent.xmin.toFixed(2)}</span><br/>
+                    <span>X right {mapView.extent.xmax.toFixed(2)}</span><br/>
+                    <span>Y bottom {mapView.extent.ymin.toFixed(2)}</span><br/>
+                    <span>Y top {mapView.extent.ymax.toFixed(2)}</span><br/>
+                    <span>Rotation {mapView.rotation.toFixed(2)}</span><br/>
+                    <span>Center {mapView.center.x.toFixed(2)}/{mapView.center.y.toFixed(2)}</span>
                 </div>
             }
         }

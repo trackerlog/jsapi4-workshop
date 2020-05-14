@@ -15,6 +15,12 @@ import FeatureLayerView from "esri/views/layers/FeatureLayerView";
 import GraphicsLayer from "esri/layers/GraphicsLayer";
 import Sketch from "esri/widgets/Sketch";
 import Editor from "esri/widgets/Editor";
+import Graphic from "esri/Graphic";
+
+interface ISketchCreateEvent {
+  state: string;
+  graphic: Graphic;
+}
 
 class LearnJsapi4App {
 
@@ -33,6 +39,7 @@ class LearnJsapi4App {
     this.addFotoLayer();
     this.addEditLayer();
     this.sketchLayer = this.initNewGraphicsLayer("sketchLayer", "Sketch Layer");
+    this.map.add(this.sketchLayer);
     this.mapView = this.viewFactory(MapView, "mapDiv");
     this.sceneView = this.viewFactory(SceneView, "sceneDiv");
     this.addCenterWatch(this.mapView, this.sceneView);
@@ -178,7 +185,7 @@ class LearnJsapi4App {
     });
     view.ui.add(searchWidget, {
       position: "top-right",
-      index: 0
+      index: 1
     });
 
     var editor = new Editor({
@@ -186,7 +193,7 @@ class LearnJsapi4App {
     });
     view.ui.add(editor, {
       position: "top-right",
-      index: 2
+      index: 0
     });
 
     var sketch = new Sketch({
@@ -194,19 +201,24 @@ class LearnJsapi4App {
       view: view
     });
     // Listen to sketch widget's create event.
-    sketch.on("create", (event: any) => {
+    sketch.on("create", (event: ISketchCreateEvent) => {
       if (event.state === "complete") {
        if(event.graphic.geometry.type === "polygon") {
-         this.editLayer.applyEdits({
-           addFeatures: [event.graphic]
-         });
-         this.sketchLayer.remove(event.graphic);
+        if (this.editLayer) {
+          this.editLayer.applyEdits({
+            addFeatures: [event.graphic]
+          });
+          this.sketchLayer.remove(event.graphic);
+        }
+        else {
+          console.warn("Editierlayer ungültig.");
+        }
        }
       }
     });
     view.ui.add(sketch, {
       position: "top-right",
-      index: 1
+      index: 0
     });
 
     let geometryWidget = new GeometryWidget(view);
@@ -220,7 +232,7 @@ class LearnJsapi4App {
       index: 3
     });
 
-    let watchWidget = new WatchWidget(view);
+    let watchWidget = new WatchWidget(view)
     view.ui.add(watchWidget, {
       position: "bottom-left",
       index: 0
