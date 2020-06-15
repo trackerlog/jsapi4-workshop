@@ -5,9 +5,9 @@ This demo app is forked from the minimalistic JSAPI 4.x + TypeScript demo app by
 
 ## Usage
 
-1. Clone the repo and `npm install` dependencies
+1. Clone the repo and `npm i` dependencies
 2. `npm run dev` to compile `/app/main.ts` to `main.js` in the same folder and watch for changes
-3. launch `index.html` in your browser of choice.
+3. `npm start` to launch browser-sync in your default browser.
 4. `npm run lint` to run [TSLint](https://github.com/palantir/tslint) on TypeScript files.
 
 ## Releases
