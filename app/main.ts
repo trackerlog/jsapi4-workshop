@@ -51,12 +51,12 @@ class LearnJsapi4App {
     this.mapView.when(() => {
       this.addWidgets(this.mapView);
 
-      // let query = this.editLayer.createQuery();
-      // this.editLayer.queryExtent(query).then((result: any) => {
-      //   this.mapView.goTo(result.extent, {
-      //     animate: false
-      //   });
-      // });
+      let query = this.editLayer.createQuery();
+      this.editLayer.queryExtent(query).then((result: any) => {
+        this.mapView.goTo(result.extent, {
+          animate: false
+        });
+      });
 
     });
   }
@@ -112,9 +112,9 @@ class LearnJsapi4App {
     return {
       type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
       path: path,
-      color: "#ffff00",
+      color: "#9ABBDF",
       outline: {
-        color: [0, 0, 0, 0.7],
+        color: "#00337F",
         width: 0.5
       },
       angle: 180,
@@ -123,14 +123,6 @@ class LearnJsapi4App {
   }
 
   private createWeatherLayer(id: string, renderer: Renderer) {
-    // return new FeatureLayer({
-    //   url:
-    //     "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/WorldCities/FeatureServer/0",
-    //   renderer: renderer,
-    //   definitionExpression: "adm = 'United States of America'",
-    //   id: id
-    // });
-
     return new FeatureLayer({
       url:
         "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/weather_stations_010417/FeatureServer/0",
@@ -139,43 +131,6 @@ class LearnJsapi4App {
     })
   }
 
-
-  private createStatesLayer() {
-    const statesRenderer = {
-      type: "simple", // autocasts as new SimpleRenderer()
-      symbol: {
-        type: "simple-fill", // autocasts as new SimpleFillSymbol()
-        color: [0, 0, 0, 0],
-        outline: {
-          color: [50, 50, 50, 0.7],
-          width: 0.5
-        }
-      }
-    } as unknown as Renderer;
-    return new FeatureLayer({
-      url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3",
-      renderer: statesRenderer
-    });
-  }
-
-  private createFreewayLayer() {
-    const hwyRenderer = {
-      type: "simple", // autocasts as new SimpleRenderer()
-      symbol: {
-        type: "simple-line", // autocasts as new SimpleLineSymbol()
-        width: 1,
-        color: [0, 255, 255, 0.2]
-      }
-    } as unknown as Renderer;
-    return new FeatureLayer({
-      url:
-        "https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Freeway_System/FeatureServer/2",
-      renderer: hwyRenderer,
-      minScale: 0,
-      maxScale: 0,
-      title: "Freeways"
-    });
-  }
 
   private initNewGraphicsLayer(id: string, title: string) {
     let gl = new GraphicsLayer({
@@ -219,19 +174,6 @@ class LearnJsapi4App {
       this.citiesFlv = flv;
     });
 
-    // view.ui.add(
-    //   new Legend({
-    //     view: view,
-    //     layerInfos: [
-    //       {
-    //         layer: this.hwyLayer,
-    //         hideLayers: []
-    //       }
-    //     ]
-    //   }),
-    //   "bottom-left"
-    // );
-
     return view;
   }
 
@@ -273,6 +215,18 @@ class LearnJsapi4App {
       position: "top-right",
       index: 0
     });
+
+    view.ui.add(
+      new Legend({
+        view: view,
+        layerInfos: [
+          {
+            layer: this.hwyLayer
+          }
+        ]
+      }),
+      "bottom-left"
+    );
 
     //   var sketch = new Sketch({
     //     layer: this.sketchLayer,
