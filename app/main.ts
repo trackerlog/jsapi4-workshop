@@ -17,6 +17,8 @@ import Legend from "esri/widgets/Legend";
 //   graphic: Graphic;
 // }
 
+// adapted from https://developers.arcgis.com/javascript/latest/sample-code/visualization-vv-rotation/index.html
+
 class LearnJsapi4App {
 
   private map: EsriMap;
@@ -28,9 +30,12 @@ class LearnJsapi4App {
   private citiesFlv: FeatureLayerView;
   private innerHighlightHandle: Handle;
   private outerHighlightHandle: Handle;
-  private iconPath = "M24.0,2.199C11.9595,2.199,2.199,11.9595,2.199,24.0c0.0,12.0405,9.7605,21.801,21.801,21.801c12.0405,0.0,21.801-9.7605,21.801-21.801C45.801,11.9595,36.0405,2.199,24.0,2.199zM31.0935,11.0625c1.401,0.0,2.532,2.2245,2.532,4.968S32.4915,21.0,31.0935,21.0c-1.398,0.0-2.532-2.2245-2.532-4.968S29.697,11.0625,31.0935,11.0625zM16.656,11.0625c1.398,0.0,2.532,2.2245,2.532,4.968S18.0555,21.0,16.656,21.0s-2.532-2.2245-2.532-4.968S15.258,11.0625,16.656,11.0625zM24.0315,39.0c-4.3095,0.0-8.3445-2.6355-11.8185-7.2165c3.5955,2.346,7.5315,3.654,11.661,3.654c4.3845,0.0,8.5515-1.47,12.3225-4.101C32.649,36.198,28.485,39.0,24.0315,39.0z";
+  private iconPaths = {
+    "arrow": "M14.5,29 23.5,0 14.5,9 5.5,0z",
+    "smiley": "M24.0,2.199C11.9595,2.199,2.199,11.9595,2.199,24.0c0.0,12.0405,9.7605,21.801,21.801,21.801c12.0405,0.0,21.801-9.7605,21.801-21.801C45.801,11.9595,36.0405,2.199,24.0,2.199zM31.0935,11.0625c1.401,0.0,2.532,2.2245,2.532,4.968S32.4915,21.0,31.0935,21.0c-1.398,0.0-2.532-2.2245-2.532-4.968S29.697,11.0625,31.0935,11.0625zM16.656,11.0625c1.398,0.0,2.532,2.2245,2.532,4.968S18.0555,21.0,16.656,21.0s-2.532-2.2245-2.532-4.968S15.258,11.0625,16.656,11.0625zM24.0315,39.0c-4.3095,0.0-8.3445-2.6355-11.8185-7.2165c3.5955,2.346,7.5315,3.654,11.661,3.654c4.3845,0.0,8.5515-1.47,12.3225-4.101C32.649,36.198,28.485,39.0,24.0315,39.0z"
+  }
   private initColor = "#ce641d";
-  citiesSvgLayer: any;
+  weatherSvgLayer: any;
   hwyLayer: any;
   
 
@@ -58,12 +63,27 @@ class LearnJsapi4App {
 
   private initializeMap() {
 
-    const citiesSvgRenderer = {
+    const svgRenderer = {
       type: "simple",
-      symbol: this.createSvgSymbol(this.iconPath, this.initColor)
+      symbol: this.createSvgSymbol(this.iconPaths.arrow, this.initColor),
+      visualVariables: [
+        {
+          type: "rotation",
+          field: "WIND_DIRECT",
+          rotationType: "geographic"
+        },
+        {
+          type: "size",
+          field: "WIND_SPEED",
+          minDataValue: 0,
+          maxDataValue: 60,
+          minSize: 8,
+          maxSize: 40
+        }
+      ]
     } as unknown as Renderer;
 
-    const citiesSimpleRenderer = {
+    const circleRenderer = {
       type: "simple",
       symbol: {
         type: "simple-marker",
@@ -77,15 +97,12 @@ class LearnJsapi4App {
       }
     } as unknown as Renderer;
 
-    this.citiesSvgLayer = this.createCitiesLayer("citiesSvg", citiesSvgRenderer);
-    let citiesSimpleLayer = this.createCitiesLayer("citiesSimple", citiesSimpleRenderer);
-
-    this.hwyLayer = this.createFreewayLayer();
-    let statesLayer = this.createStatesLayer();
+    this.weatherSvgLayer = this.createWeatherLayer("citiesSvg", svgRenderer);
+    let weatherSimpleLayer = this.createWeatherLayer("citiesSimple", circleRenderer);
 
     const mapProperties = {
-      // basemap: this._basemap,
-      layers: [statesLayer, this.hwyLayer, this.citiesSvgLayer, citiesSimpleLayer]
+      basemap: "gray-vector",
+      layers: [this.weatherSvgLayer, weatherSimpleLayer]
     };
 
     this.map = new EsriMap(mapProperties);
@@ -93,22 +110,33 @@ class LearnJsapi4App {
 
   private createSvgSymbol(path: string, color: string | number[]) {
     return {
-      type: "simple-marker",
-      size: 10,
-      color: color,
-      outline: null as string,
-      path: path
-    }
+      type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+      path: path,
+      color: "#ffff00",
+      outline: {
+        color: [0, 0, 0, 0.7],
+        width: 0.5
+      },
+      angle: 180,
+      size: 15
+    };
   }
 
-  private createCitiesLayer(id: string, renderer: Renderer) {
+  private createWeatherLayer(id: string, renderer: Renderer) {
+    // return new FeatureLayer({
+    //   url:
+    //     "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/WorldCities/FeatureServer/0",
+    //   renderer: renderer,
+    //   definitionExpression: "adm = 'United States of America'",
+    //   id: id
+    // });
+
     return new FeatureLayer({
       url:
-        "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/WorldCities/FeatureServer/0",
-      renderer: renderer,
-      definitionExpression: "adm = 'United States of America'",
-      id: id
-    });
+        "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/weather_stations_010417/FeatureServer/0",
+        renderer: renderer,
+        id: id
+    })
   }
 
 
@@ -163,19 +191,6 @@ class LearnJsapi4App {
       // center: this._center,
       // zoom: this._zoom,
       map: this.map,
-      extent: {
-        xmin: -3094834,
-        ymin: -44986,
-        xmax: 2752687,
-        ymax: 3271654,
-        spatialReference: {
-          wkid: 5070
-        }
-      },
-      spatialReference: {
-        // NAD_1983_Contiguous_USA_Albers
-        wkid: 5070
-      },
       highlightOptions: {
         color: [255, 255, 0, 1],
         haloOpacity: 0.9,
@@ -200,7 +215,7 @@ class LearnJsapi4App {
       });
     });
 
-    view.whenLayerView(this.citiesSvgLayer).then((flv: FeatureLayerView) => {
+    view.whenLayerView(this.weatherSvgLayer).then((flv: FeatureLayerView) => {
       this.citiesFlv = flv;
     });
 
