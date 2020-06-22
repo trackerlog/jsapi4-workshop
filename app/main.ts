@@ -16,11 +16,12 @@ import Graphic from "esri/Graphic";
 import FeatureSet from "esri/tasks/support/FeatureSet";
 import { createPCTrueColorRenderer } from "esri/renderers/smartMapping/creators/color";
 import Color from "esri/Color";
+import Sketch from "esri/widgets/Sketch";
 
-// interface ISketchCreateEvent {
-//   state: string;
-//   graphic: Graphic;
-// }
+interface ISketchCreateEvent {
+  state: string;
+  graphic: Graphic;
+}
 
 // adapted from https://developers.arcgis.com/javascript/latest/sample-code/visualization-vv-rotation/index.html
 
@@ -50,8 +51,8 @@ class LearnJsapi4App {
     this.initializeMap();
     this.addEditLayer();
 
-    // this.sketchLayer = this.initNewGraphicsLayer("sketchLayer", "Sketch Layer");
-    // this.map.add(this.sketchLayer);
+    this.sketchLayer = this.initNewGraphicsLayer("sketchLayer", "Sketch Layer");
+    this.map.add(this.sketchLayer);
 
     this.mapView = this.initializeMapView();
 
@@ -229,13 +230,13 @@ class LearnJsapi4App {
   }
 
   private addWidgets(view: View) {
-    let layerList = new LayerList({
-      view: view
-    });
-    view.ui.add(layerList, {
-      position: "bottom-right",
-      index: 0
-    });
+    // let layerList = new LayerList({
+    //   view: view
+    // });
+    // view.ui.add(layerList, {
+    //   position: "bottom-right",
+    //   index: 0
+    // });
 
     if (view.type == "2d") {
       let compass = new Compass({
@@ -252,13 +253,13 @@ class LearnJsapi4App {
       index: 1
     });
 
-    // var editor = new Editor({
-    //   view: view
-    // });
-    // view.ui.add(editor, {
-    //   position: "top-right",
-    //   index: 0
-    // });
+    var editor = new Editor({
+      view: view
+    });
+    view.ui.add(editor, {
+      position: "top-right",
+      index: 0
+    });
 
     view.ui.add(
       new Legend({
@@ -274,31 +275,30 @@ class LearnJsapi4App {
 
     // view.ui.add(new WatchWidget(view), "top-right");
 
-    //   var sketch = new Sketch({
-    //     layer: this.sketchLayer,
-    //     view: view
-    //   });
-    //   // Listen to sketch widget's create event.
-    //   sketch.on("create", (event: ISketchCreateEvent) => {
-    //     if (event.state === "complete") {
-    //      if(event.graphic.geometry.type === "polygon") {
-    //       if (this.editLayer) {
-    //         this.editLayer.applyEdits({
-    //           addFeatures: [event.graphic]
-    //         });
-    //         this.sketchLayer.remove(event.graphic);
-    //       }
-    //       else {
-    //         console.warn("Editierlayer ungültig.");
-    //       }
-    //      }
-    //     }
-    //   });
-    //   view.ui.add(sketch, {
-    //     position: "top-right",
-    //     index: 0
-    //   });
-
+    var sketch = new Sketch({
+      layer: this.sketchLayer,
+      view: view
+    });
+    // Listen to sketch widget's create event.
+    sketch.on("create", (event: ISketchCreateEvent) => {
+      if (event.state === "complete") {
+        if(event.graphic.geometry.type === "polygon") {
+        if (this.editLayer) {
+          this.editLayer.applyEdits({
+            addFeatures: [event.graphic]
+          });
+          this.sketchLayer.remove(event.graphic);
+        }
+        else {
+          console.warn("Editierlayer ungültig.");
+        }
+        }
+      }
+    });
+    view.ui.add(sketch, {
+      position: "top-right",
+      index: 0
+    });
   }
 }
 
