@@ -19,6 +19,7 @@ import Color from "esri/Color";
 import Sketch from "esri/widgets/Sketch";
 import Field from "esri/layers/support/Field";
 import FieldInfo from "esri/popup/FieldInfo";
+import Attachments from "esri/widgets/Attachments";
 
 interface ISketchCreateEvent {
   state: string;
@@ -276,6 +277,8 @@ class LearnJsapi4App {
       position: "top-right",
       index: 0
     });
+
+    let attachments = new Attachments
 
     view.ui.add(
       new Legend({
