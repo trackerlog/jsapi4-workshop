@@ -43,6 +43,7 @@ class LearnJsapi4App {
   private weatherSimpleLayer: FeatureLayer;
   private weatherSvgFlv: FeatureLayerView;
   private weatherSimpleFlv: FeatureLayerView;
+  private ctrlKeyDown: boolean;
   
 
   constructor() {
@@ -64,6 +65,23 @@ class LearnJsapi4App {
       //   });
       // });
     });
+
+    document.addEventListener('keydown', this.logKeyDown);
+    document.addEventListener('keyup', this.logKeyUp);
+  }
+
+  private logKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode===17) { // ctrl key
+      this.ctrlKeyDown = true;
+      console.log(this.ctrlKeyDown);
+      
+    }
+  }
+  private logKeyUp = (e: KeyboardEvent) => {
+    if (e.keyCode===17) { // ctrl key
+      this.ctrlKeyDown = false;
+      console.log(this.ctrlKeyDown);
+    }
   }
 
   private initializeMap() {
@@ -173,6 +191,16 @@ class LearnJsapi4App {
             let weatherSimpleQuery = this.weatherSimpleLayer.createQuery();
             weatherSimpleQuery.where = objectIdField + "=" + svgFeature.attributes[objectIdField];
             this.weatherSimpleLayer.queryFeatures(weatherSimpleQuery).then((response: FeatureSet) => {
+              console.log(this.ctrlKeyDown);
+              
+              if (this.ctrlKeyDown === false) {
+                if (this.innerHighlightHandle) {
+                  this.innerHighlightHandle.remove();
+                }
+                if (this.outerHighlightHandle) {
+                  this.outerHighlightHandle.remove();
+                }
+              }
               this.innerHighlightHandle = this.weatherSvgFlv.highlight(svgFeature) as unknown as Handle;
               this.outerHighlightHandle = this.weatherSimpleFlv.highlight(response.features[0]) as unknown as Handle;
             });
