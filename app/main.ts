@@ -11,6 +11,7 @@ import FeatureLayerView from "esri/views/layers/FeatureLayerView";
 import Handle from "esri/core/Handles";
 import Renderer from "esri/renderers/Renderer";
 import Legend from "esri/widgets/Legend";
+import WatchWidget from "./WatchWidget";
 
 // interface ISketchCreateEvent {
 //   state: string;
@@ -50,14 +51,13 @@ class LearnJsapi4App {
 
     this.mapView.when(() => {
       this.addWidgets(this.mapView);
-
-      let query = this.editLayer.createQuery();
-      this.editLayer.queryExtent(query).then((result: any) => {
-        this.mapView.goTo(result.extent, {
-          animate: false
-        });
-      });
-
+      
+      // let query = this.editLayer.createQuery();
+      // this.editLayer.queryExtent(query).then((result: any) => {
+      //   this.mapView.goTo(result.extent, {
+      //     animate: false
+      //   });
+      // });
     });
   }
 
@@ -143,8 +143,8 @@ class LearnJsapi4App {
   private initializeMapView(): MapView {
     const mapViewProperties = {
       container: "mapDiv",
-      // center: this._center,
-      // zoom: this._zoom,
+      center: {"spatialReference":{"latestWkid":3857,"wkid":102100},"x":438847.5319327719,"y":6930766.444916215},
+      zoom: 7,
       map: this.map,
       highlightOptions: {
         color: [255, 255, 0, 1],
@@ -208,25 +208,27 @@ class LearnJsapi4App {
       index: 1
     });
 
-    var editor = new Editor({
-      view: view
-    });
-    view.ui.add(editor, {
-      position: "top-right",
-      index: 0
-    });
+    // var editor = new Editor({
+    //   view: view
+    // });
+    // view.ui.add(editor, {
+    //   position: "top-right",
+    //   index: 0
+    // });
 
     view.ui.add(
       new Legend({
         view: view,
         layerInfos: [
           {
-            layer: this.hwyLayer
+            layer: this.weatherSvgLayer
           }
         ]
       }),
       "bottom-left"
     );
+
+    // view.ui.add(new WatchWidget(view), "top-right");
 
     //   var sketch = new Sketch({
     //     layer: this.sketchLayer,
