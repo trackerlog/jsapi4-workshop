@@ -17,6 +17,8 @@ import FeatureSet from "esri/tasks/support/FeatureSet";
 import { createPCTrueColorRenderer } from "esri/renderers/smartMapping/creators/color";
 import Color from "esri/Color";
 import Sketch from "esri/widgets/Sketch";
+import Field from "esri/layers/support/Field";
+import FieldInfo from "esri/popup/FieldInfo";
 
 interface ISketchCreateEvent {
   state: string;
@@ -147,12 +149,14 @@ class LearnJsapi4App {
   }
 
   private createWeatherLayer(id: string, renderer: Renderer) {
-    return new FeatureLayer({
+    let weatherLayer = new FeatureLayer({
       url:
         "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/weather_stations_010417/FeatureServer/0",
         renderer: renderer,
-        id: id
-    })
+        id: id,
+        popupEnabled: false
+    });
+    return weatherLayer;
   }
 
 
@@ -174,12 +178,19 @@ class LearnJsapi4App {
         color: [255, 255, 0, 1],
         haloOpacity: 0.9,
         fillOpacity: 0.2
+      },          
+      popup: {
+        dockEnabled: true,
+        dockOptions: {
+          buttonEnabled: true,
+          breakpoint: true
+        },
+        defaultPopupTemplateEnabled: true,
+        autoOpenEnabled: true
       }
     };
 
     let view = new MapView(mapViewProperties);
-
-    view.popup.autoOpenEnabled = false;
 
     view.on("click", (event: any) => {
       view.hitTest(event).then((response: any) => {
@@ -254,7 +265,12 @@ class LearnJsapi4App {
     });
 
     var editor = new Editor({
-      view: view
+      view: view,
+      layerInfos: [{
+        layer: this.editLayer,
+        allowAttachments: true
+      }
+    ]
     });
     view.ui.add(editor, {
       position: "top-right",
