@@ -14,6 +14,8 @@ import Legend from "esri/widgets/Legend";
 import WatchWidget from "./WatchWidget";
 import Graphic from "esri/Graphic";
 import FeatureSet from "esri/tasks/support/FeatureSet";
+import { createPCTrueColorRenderer } from "esri/renderers/smartMapping/creators/color";
+import Color from "esri/Color";
 
 // interface ISketchCreateEvent {
 //   state: string;
@@ -91,9 +93,9 @@ class LearnJsapi4App {
       symbol: {
         type: "simple-marker",
         size: 50,
-        color: [255, 255, 255, 0],
+        color: [255,255,255,0],
         outline: {
-          color: [128, 128, 128, 1],
+          color: "#9ABBDF",
           width: 3
         },
         style: "circle"
@@ -167,11 +169,11 @@ class LearnJsapi4App {
           svgResults.forEach((svgResult: any) => {
             let svgFeature: Graphic = svgResult.graphic;
             let objectIdField = (svgFeature.layer as FeatureLayer).objectIdField;
-            this.innerHighlightHandle = this.weatherSvgFlv.highlight(svgFeature) as unknown as Handle;
             
             let weatherSimpleQuery = this.weatherSimpleLayer.createQuery();
             weatherSimpleQuery.where = objectIdField + "=" + svgFeature.attributes[objectIdField];
             this.weatherSimpleLayer.queryFeatures(weatherSimpleQuery).then((response: FeatureSet) => {
+              this.innerHighlightHandle = this.weatherSvgFlv.highlight(svgFeature) as unknown as Handle;
               this.outerHighlightHandle = this.weatherSimpleFlv.highlight(response.features[0]) as unknown as Handle;
             });
           });
