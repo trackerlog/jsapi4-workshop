@@ -73,7 +73,21 @@ class LearnJsapi4App {
   private viewFactory<V extends View>(view: new(parameters: object) => V, containerDiv: string): V {
     let initView = new view({
       map: this.map,
-      container: containerDiv
+      container: containerDiv,
+      highlightOptions: {
+        color: [255, 255, 0, 1],
+        haloOpacity: 0.9,
+        fillOpacity: 0.2
+      },          
+      popup: {
+        dockEnabled: true,
+        dockOptions: {
+          buttonEnabled: true,
+          breakpoint: true
+        },
+        defaultPopupTemplateEnabled: true,
+        autoOpenEnabled: true
+      }
     });
 
     initView.when(() => {
