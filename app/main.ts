@@ -203,7 +203,11 @@ class LearnJsapi4App {
     });
 
     var editor = new Editor({
-      view: view
+      view: view,
+      layerInfos: [{
+        layer: this.editLayer,
+        allowAttachments: true
+      }
     });
     view.ui.add(editor, {
       position: "top-right",
