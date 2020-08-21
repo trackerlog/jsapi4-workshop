@@ -20,6 +20,8 @@ import Sketch from "esri/widgets/Sketch";
 import Field from "esri/layers/support/Field";
 import FieldInfo from "esri/popup/FieldInfo";
 import Attachments from "esri/widgets/Attachments";
+import MapImageLayer from "esri/layers/MapImageLayer";
+import TileLayer from "esri/layers/TileLayer";
 
 interface ISketchCreateEvent {
   state: string;
@@ -127,9 +129,13 @@ class LearnJsapi4App {
     this.weatherSvgLayer = this.createWeatherLayer("weatherSvg", svgRenderer);
     this.weatherSimpleLayer = this.createWeatherLayer("weatherSimple", circleRenderer);
 
+    let tileLayer = new TileLayer({
+      url: "https://tiles.arcgis.com/tiles/OLiydejKCZTGhvWg/arcgis/rest/services/SpezialsymboleTile/MapServer"
+    });
+
     const mapProperties = {
       basemap: "gray-vector",
-      layers: [this.weatherSvgLayer, this.weatherSimpleLayer]
+      layers: [this.weatherSvgLayer, this.weatherSimpleLayer, tileLayer]
     };
 
     this.map = new EsriMap(mapProperties);
