@@ -21,10 +21,9 @@
     "url": "https://github.com/Esri/jsapi-resources/issues"
   },
   "homepage": "https://developers.arcgis.com/javascript/latest/guide/typescript-setup/index.html",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/arcgis-js-api": "^4.15.0",
+    "@types/arcgis-js-api": "^4.13.0",
     "browser-sync": "^2.26.7",
     "dojo-typings": "^1.11.9",
     "tslint": "^5.16.0",
