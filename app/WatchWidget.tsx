@@ -40,6 +40,7 @@ class WatchWidget extends declared(Widget) {
         let viewSpecificProps: JSX.Element;
         if (this.view.type=="2d") {
             let mapView = this.view as MapView;
+            // console.log(JSON.stringify(mapView.center));
             if (mapView.extent) {
                 viewSpecificProps = <div>
                     <span class={CSS.emphasis}>Extent Properties</span><br/>
