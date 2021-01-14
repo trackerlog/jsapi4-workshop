@@ -1,5 +1,3 @@
-/// <amd-dependency path="esri/core/tsSupport/declareExtendsHelper" name="__extends" />
-/// <amd-dependency path="esri/core/tsSupport/decorateHelper" name="__decorate" />
 import { subclass, declared, property } from "esri/core/accessorSupport/decorators";
 import Widget from "esri/widgets/Widget";
 import { renderable, tsx } from "esri/widgets/support/widget";
@@ -10,7 +8,6 @@ import FeatureLayer from "esri/layers/FeatureLayer";
 import FeatureLayerView from "esri/views/layers/FeatureLayerView";
 import Graphic from "esri/Graphic";
 import geometryEngine from "esri/geometry/geometryEngine";
-import GraphicsLayer from "esri/layers/GraphicsLayer";
 
 const CSS = {
     base: "esri-hello-world",
@@ -42,15 +39,15 @@ class GeometryWidget extends declared(Widget) {
         this.view = view;
     }
 
-    public setSelectionTarget(layer: FeatureLayer){
+    public setSelectionTarget(layer: FeatureLayer) {
         this.selectionTargetLayer = layer;
     }
 
-    public setEditLayer(layer: FeatureLayer){
+    public setEditLayer(layer: FeatureLayer) {
         this.editLayer = layer;
     }
 
-    public setLayerView(layerView: FeatureLayerView){
+    public setLayerView(layerView: FeatureLayerView) {
         this.layerView = layerView;
     }
 
@@ -65,7 +62,7 @@ class GeometryWidget extends declared(Widget) {
                     query.units = "meters";
                     query.spatialRelationship = "intersects";  // this is the default
                     query.returnGeometry = true;
-                    query.outFields = ["*"];                
+                    query.outFields = ["*"];
                     this.selectionTargetLayer.queryFeatures(query)
                         .then((response) => {
                             this.highlightHandles.push(this.layerView.highlight(response.features));
@@ -74,16 +71,16 @@ class GeometryWidget extends declared(Widget) {
                 }
                 else {
                     console.error("GeometryWidget: No target FeatureLayer set.");
-                    
+
                 }
             });
-        } else{
+        } else {
             this.highlightClickHandler.remove();
         }
     }
 
     protected unifySelectedFeatures() {
-        let geometries = this.highlightedFeatures.map((feature: Graphic) => { 
+        let geometries = this.highlightedFeatures.map((feature: Graphic) => {
             return feature.geometry;
         });
 
@@ -101,7 +98,7 @@ class GeometryWidget extends declared(Widget) {
         }
     }
 
-    protected clearSelectedFeatures(){
+    protected clearSelectedFeatures() {
         this.highlightedFeatures = [];
         this.highlightHandles.map((handle: __esri.Handle) => { handle.remove() });
     }

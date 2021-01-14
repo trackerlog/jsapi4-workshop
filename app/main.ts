@@ -24,7 +24,7 @@ interface ISketchCreateEvent {
 
 class LearnJsapi4App {
 
-  private map : EsriMap;
+  private map: EsriMap;
   mapView: MapView;
   sceneView: SceneView;
   weinLayer: FeatureLayer;
@@ -32,7 +32,7 @@ class LearnJsapi4App {
   fotoLayer: FeatureLayer;
   sketchLayer: GraphicsLayer;
   editLayer: FeatureLayer;
-  
+
   constructor() {
     this.initializeMap();
     this.addWeinLayer();
@@ -70,7 +70,7 @@ class LearnJsapi4App {
     return gl;
   }
 
-  private viewFactory<V extends View>(view: new(parameters: object) => V, containerDiv: string): V {
+  private viewFactory<V extends View>(view: new (parameters: object) => V, containerDiv: string): V {
     let initView = new view({
       map: this.map,
       container: containerDiv,
@@ -78,7 +78,7 @@ class LearnJsapi4App {
         color: [255, 255, 0, 1],
         haloOpacity: 0.9,
         fillOpacity: 0.2
-      },          
+      },
       popup: {
         dockEnabled: true,
         dockOptions: {
@@ -164,7 +164,7 @@ class LearnJsapi4App {
     this.map.add(this.fotoLayer);
 
   }
-  
+
   private addWidgets(view: View) {
     let layerList = new LayerList({
       view: view
@@ -173,14 +173,14 @@ class LearnJsapi4App {
       position: "bottom-right",
       index: 0
     });
-  
-    if (view.type=="2d") {
+
+    if (view.type == "2d") {
       let compass = new Compass({
         view: view
       });
       view.ui.add(compass, "top-left");
     }
-  
+
     let scaleRangeSlider = new ScaleRangeSlider({
       view: view,
       layer: this.weinLayer,
@@ -190,10 +190,10 @@ class LearnJsapi4App {
       position: "top-left",
       index: 0
     });
-    scaleRangeSlider.watch(["minScale", "maxScale"], function(value, oldValue, name) {
+    scaleRangeSlider.watch(["minScale", "maxScale"], function (value, oldValue, name) {
       this.weinLayer[name] = value;
     });
-  
+
     let searchWidget = new Search({
       view: view
     });
@@ -207,7 +207,7 @@ class LearnJsapi4App {
       layerInfos: [{
         layer: this.editLayer,
         allowAttachments: true
-      }
+      }]
     });
     view.ui.add(editor, {
       position: "top-right",
@@ -221,17 +221,17 @@ class LearnJsapi4App {
     // Listen to sketch widget's create event.
     sketch.on("create", (event: ISketchCreateEvent) => {
       if (event.state === "complete") {
-       if(event.graphic.geometry.type === "polygon") {
-        if (this.editLayer) {
-          this.editLayer.applyEdits({
-            addFeatures: [event.graphic]
-          });
-          this.sketchLayer.remove(event.graphic);
+        if (event.graphic.geometry.type === "polygon") {
+          if (this.editLayer) {
+            this.editLayer.applyEdits({
+              addFeatures: [event.graphic]
+            });
+            this.sketchLayer.remove(event.graphic);
+          }
+          else {
+            console.warn("Editierlayer ungültig.");
+          }
         }
-        else {
-          console.warn("Editierlayer ungültig.");
-        }
-       }
       }
     });
     view.ui.add(sketch, {
@@ -256,7 +256,7 @@ class LearnJsapi4App {
       index: 0
     });
   }
-  
+
 }
 
 let app = new LearnJsapi4App();
