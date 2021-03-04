@@ -12,8 +12,9 @@
       "esri/views/SceneView",
       "esri/layers/FeatureLayer",
       "esri/widgets/Slider",
+      "esri/widgets/Expand",
       "esri/widgets/ElevationProfile"
-    ], function (WebScene, SceneView, FeatureLayer, Slider, ElevationProfile) {
+    ], function (WebScene, SceneView, FeatureLayer, Slider, Expand, ElevationProfile) {
 
       /***********************************
        * Load webscene and create a SceneView
@@ -131,11 +132,9 @@
         const elevationInfo = waterLayer.elevationInfo.clone();
         elevationInfo.offset = value;
         waterLayer.elevationInfo = elevationInfo;
-        // if (elevationProfile) {
-        //   elevationProfile.viewModel.start({
-        //     mode: "select"
-        //   });
-        // }
+        if (elevationProfile) {
+          elevationProfile.viewModel.cancel();
+        }
       });
 
       const elevationProfile = new ElevationProfile({
@@ -153,9 +152,20 @@
         }
       });
 
-      view.when(function () {
-        view.ui.add(elevationProfile, "bottom-left");
-        elevationProfile.viewModel.start();
+      var bgExpand = new Expand({
+        view: view,
+        content: elevationProfile,
+        expandIconClass: `esri-icon-polyline`
+      });
+      view.ui.add(bgExpand, "bottom-left");
+
+      bgExpand.watch("expanded", isExpanded => {
+        if (isExpanded) {
+          elevationProfile.viewModel.start();
+        }
+        else {
+          elevationProfile.viewModel.clear();
+        }
       });
 
     });
@@ -197,6 +207,20 @@
 
     #turqoise {
       background-color: #a2f9f5;
+    }
+
+    .esri-expand__content {
+      width: 400px;
+    }
+
+    .esri-ui-corner .esri-expand .esri-widget--panel {
+      width: auto !important;
+      overflow: hidden;
+      padding: 3px;
+    }
+
+    .esri-view-height-small .esri-expand .esri-widget--panel {
+      max-height: unset;
     }
   </style>
 </head>
