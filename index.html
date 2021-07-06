@@ -4,13 +4,21 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
     <title>Meine besondere APP</title>
     <style>
-      html,
-      body,
-      #viewDiv {
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        width: 100%;
+     html, body {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+      #view2dDiv {
+        float: left;
+    overflow: hidden;
+    width: 50vw;
+    height: 100vh;
+      }
+      #view3dDiv {
+        overflow: hidden;
+    height: 100vh;
       }
     </style>
     <link rel="stylesheet" href="https://js.arcgis.com/4.20/esri/themes/light/main.css">
@@ -25,10 +33,11 @@
         ]
       };
     </script>
-    <script src="https://js.arcgis.com/4.11"></script>
+    <script src="https://js.arcgis.com/4.20"></script>
   </head>
   <body>
-    <div id="viewDiv"></div>
+    <div id="view2dDiv"></div>
+    <div id="view3dDiv"></div>
     <script>require(["app/main"]);</script>
   </body>
 </html>
