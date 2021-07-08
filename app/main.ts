@@ -8,6 +8,7 @@ import Search from "esri/widgets/Search";
 import SceneView from "esri/views/SceneView";
 import View from "esri/views/View";
 import { Point } from "esri/geometry";
+import MyWidget from "./MyWidget"
 
 class LearnJsapi4App {
 
@@ -21,16 +22,16 @@ class LearnJsapi4App {
     this.initializeMap();
     this.addWeinLayer();
     this.mapView = this.viewFactory(MapView, "mapDiv");
-    this.sceneView = this.viewFactory(SceneView, "sceneDiv");
+    //this.sceneView = this.viewFactory(SceneView, "sceneDiv");
     let firsttime = true;
-    this.sceneView.watch("stationary", (s: boolean) => {
+/*     this.sceneView.watch("stationary", (s: boolean) => {
       if (s && firsttime) {
         firsttime = false;
         this.sceneView.watch("center", (c: Point) => {
           this.mapView.center = c;
         });
       }
-    });
+    }); */
   }
 
   private initializeMap() {
@@ -104,6 +105,14 @@ class LearnJsapi4App {
       position: "top-right",
       index: 0
     });
+    const daNewWidget = new MyWidget({
+        view: view
+    });
+    view.ui.add(daNewWidget,{
+      position: "top-left",
+      index :10
+    })
+
   }
   
 }
