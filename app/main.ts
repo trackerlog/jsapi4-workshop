@@ -118,3 +118,5 @@ class LearnJsapi4App {
 }
 
 let app = new LearnJsapi4App();
+
+/* Flo is blöd */ 
