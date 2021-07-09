@@ -17,10 +17,12 @@ class LearnJsapi4App {
   sceneView: SceneView;
   weinLayer: FeatureLayer;
   weinQuery: __esri.Query;
+  enAndererLayer: FeatureLayer;
   
   constructor() {
     this.initializeMap();
     this.addWeinLayer();
+    this.addEnAnderenLayer();
     this.mapView = this.viewFactory(MapView, "mapDiv");
     //this.sceneView = this.viewFactory(SceneView, "sceneDiv");
     let firsttime = true;
@@ -48,9 +50,10 @@ class LearnJsapi4App {
       zoom: 3
     });
   
+   
     this.addWidgets(initView);
-
     initView.when(() => {
+
       this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
         initView.goTo(result.extent, {
           animate: false,
@@ -70,6 +73,14 @@ class LearnJsapi4App {
     this.weinQuery = this.weinLayer.createQuery();
     this.weinQuery.where = "1=1";
     this.weinQuery.outFields = ["*"];
+  }
+
+  private addEnAnderenLayer(){
+    this.enAndererLayer = new FeatureLayer({
+      url: "https://services.arcgis.com/OLiydejKCZTGhvWg/arcgis/rest/services/jsapi4_Workshop_View/FeatureServer"
+    });
+    this.map.add(this.enAndererLayer);
+    
   }
   
   private addWidgets(view: View) {
@@ -105,13 +116,14 @@ class LearnJsapi4App {
       position: "top-right",
       index: 0
     });
+
     const daNewWidget = new MyWidget({
         view: view
     });
     view.ui.add(daNewWidget,{
       position: "top-left",
       index :10
-    })
+    });
 
   }
   

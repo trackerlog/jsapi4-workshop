@@ -19,8 +19,14 @@ class MyWidget extends declared(Widget) {
     super();
     this.view = view;
     this.featureCounter = 0;
+    //this.viewWatcher = this.view.watch("extent", ()=>this.generateResult);
   };
+  
+  @property()
+  @renderable()
+  viewWatcher:any
 
+  //@renderable()
   featureCounter: number;
 
   @property()
@@ -31,6 +37,10 @@ class MyWidget extends declared(Widget) {
   @renderable()
   emphasized: boolean=false;
 
+  myOnChange(){
+    this.view.watch("extent", ()=>this.generateResult)
+  }
+
   render() {
     const classes ={
       [CSS.emphasis]:this.emphasized
@@ -38,7 +48,7 @@ class MyWidget extends declared(Widget) {
 
     return (
       <div class={this.classes(CSS.base,CSS.specific,classes)}>
-        {this.generateResult()}
+        {this.featureCounter} + {this.view.watch("extent", ()=> console.log("text"))}
         </div>
     );
   }
@@ -46,15 +56,18 @@ class MyWidget extends declared(Widget) {
   generateResult() {
     const allFLLayerViewsCollection = (this.view.allLayerViews.filter((lv:LayerView)=> lv.declaredClass.indexOf("FeatureLayerView")>-1));
     let anzahlFL = allFLLayerViewsCollection.length;
-    
+    console.log(anzahlFL)
     if (anzahlFL>0){ // wenn featurelayer vorhanden
       allFLLayerViewsCollection.map((lv:LayerView)=>{
         lv.when((l:FeatureLayer)=>{
-          l.queryFeatureCount().then((results)=>{return this.featureCounter = results})})
+          l.queryFeatureCount().then((results)=>
+          {return this.featureCounter = results})})
         return console.log("mapping works")})
-    }
-    return "derzeit sind " + anzahlFL +" Feature Layer sichtbar mit insgesamt "  + this.featureCounter + " Features"
+    } // Mapping mit reduce? um alle Features zu addieren???
+    return "derzeit sind " + anzahlFL +" Feature Layer sichtbar mit insgesamt "  + this.featureCounter + " Features" 
   };
 };
   
 export = MyWidget;
+
+
