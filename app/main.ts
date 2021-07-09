@@ -53,8 +53,8 @@ class LearnJsapi4App {
     initView.when(() => {
       this.weinLayer.queryExtent(this.weinQuery).then((result: any) => {
         initView.goTo(result.extent, {
-          animate: true,
-          duration: 10000,
+          animate: false,
+          duration: 1,
           easing: "ease-out"
         });
       });
